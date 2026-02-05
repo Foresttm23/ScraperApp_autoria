@@ -1,0 +1,48 @@
+import contextlib
+from typing import Any, AsyncGenerator
+
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+
+from app.config.logger import logger
+
+
+class DBSessionManager:
+    def __init__(self):
+        self.engine: AsyncEngine | None = None
+        self.sessionmaker: async_sessionmaker[AsyncSession] | None = None
+
+    def start(self, database_url: str, **pool_kwargs: Any) -> None:
+        if self.engine is None:
+            self.engine = create_async_engine(database_url, **pool_kwargs)
+            self.sessionmaker = async_sessionmaker(
+                autocommit=False, bind=self.engine, expire_on_commit=False
+            )
+
+    async def stop(self) -> None:
+        if self.engine:
+            await self.engine.dispose()
+            self.engine = None
+            self.sessionmaker = None
+
+    @contextlib.asynccontextmanager
+    async def session(self) -> AsyncGenerator[AsyncSession, None]:
+        if self.sessionmaker is None:
+            raise Exception("DB session not initialized.")
+
+        session = self.sessionmaker()
+        try:
+            yield session
+        except Exception:
+            logger.error("DB session failed, rolling back", exc_info=True)
+            await session.rollback()
+            raise
+        finally:
+            await session.close()  # Always close to return to the pool
+
+
+db_session_manager = DBSessionManager()

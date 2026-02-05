@@ -1,0 +1,11 @@
+.venv
+.idea
+deploy/envs/.env
+
+__pycache__/
+*.pyc
+
+.gitignore
+README.md
+
+app.log
