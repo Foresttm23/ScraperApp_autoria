@@ -1,14 +1,11 @@
 import contextlib
 from typing import Any, AsyncGenerator
 
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from sqlalchemy import Integer
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine, AsyncSession
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from app.config.logger import logger
+from app.core import logger
 
 
 class DBSessionManager:
@@ -41,8 +38,17 @@ class DBSessionManager:
             logger.error("DB session failed, rolling back", exc_info=True)
             await session.rollback()
             raise
+
         finally:
             await session.close()  # Always close to return to the pool
+
+
+class Base(DeclarativeBase):
+    __mapper_args__ = {"eager_defaults": True}
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    def __repr__(self) -> str:
+        return f"<{self.id}>"
 
 
 db_session_manager = DBSessionManager()

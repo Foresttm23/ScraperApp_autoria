@@ -12,3 +12,5 @@ logs/
 .vscode
 
 .ruff_cache
+
+/dumps
