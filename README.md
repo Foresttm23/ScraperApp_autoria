@@ -20,6 +20,10 @@
 
 ## By default, the app will only dump the data to a csv file at a specified time, so the scraper needs to be launched manually.
 ## The dump example can be seen in [example_2026-02-06.csv](example_2026-02-06.csv) file.
+## Scraping were done to the specific page https://auto.ria.com/uk/search/ with query parameters:
+- `?search_type=2` - used cars only;
+- `&page={page_num}` - page number, used to iterate over the pages;
+- `&limit=100` - limit of cars on 1 page, to reduce the amount of requests to the website, the increased limit were used.
 
 # How to run
 
