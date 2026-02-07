@@ -2,17 +2,17 @@
 
 ### This app allows scraping data to a `PostgreSQL` database and then dumping it to a `.csv` file at a specified time.
 
-### The scraping website is https://auto.ria.com and is used for educational purposes only.
+### The scraped website is https://auto.ria.com and is used for educational purposes only.
 
 ### The scraping itself is done using an async `Playwright` framework.
 
-### To scrape the paginated data over the number of pages, the app first checks the main page and finds all the links to the car pages, then the pages itself are scraped, and the process repeats until all pages are scraped.
+### To scrape the paginated data over the number of pages, the app first checks the page and finds all the links to the car pages, then the car pages itself are scraped, and the process repeats until all pages are scraped.
 
 ### To speed up scraping, the app uses async db connection, async `playwright` and asyncio semaphore to limit the number of concurrent requests (so the website doesn't block the app for too many requests).
 
-### Since the app is supposed to be automatic, and scrape all the data from the website pages, it uses retries and backoff strategies from the `tenacity` library to avoid getting blocked by the website.
+### Since the app is supposed to be automatic, and scrape the data from the pages, it uses retries and backoff strategies from the `tenacity` library to avoid getting blocked by the website for botting or too many requests.
 
-### At the end of scraping the data is saved to the database; to anylyze it later, we can dump the data to a `.csv` file using queries.
+### At the end of scraping the data is saved to the database; to anylyze it later, app dumps the data to a `.csv` file using queries.
 
 ### To dump data at a specified time, the app uses async `apscheduler` library that runs the dump function at a specified time interval.
 
